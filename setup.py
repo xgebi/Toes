@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="toes", # Replace with your own username
-    version="0.0.1",
+    version="0.0.2",
     author="Sarah Gebauer",
     author_email="sarah@sarahgebauer.com",
     description="Toe template engine",

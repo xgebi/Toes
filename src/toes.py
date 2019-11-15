@@ -303,29 +303,29 @@ class Toe:
 			local_scope = None
 		return result_nodes
 
-	def process_condition(self, condition):
+	def process_condition(self, condition):		
 		if type(condition) == str:
 			condition = {
-				"value": condition,
+				"value": str(condition),
 				"processed": False
 			}
 
-		if condition.value[0] == "(" and condition.value[-1] == ")":
-			condition.value = condition.value[1: len(condition.value) - 1].strip()
+		if condition["value"][0] == "(" and condition["value"][-1] == ")":
+			condition["value"] = condition["value"][1: len(condition["value"]) - 1].strip()
 
-		condition.value = condition.value.strip()
-		if condition.value.find(" ") == -1:
-			if condition.value.lower() == "true" or condition.value.lower() == "false":
+		condition["value"] = condition["value"].strip()
+		if condition["value"].find(" ") == -1:
+			if condition["value"].lower() == "true" or condition["value"].lower() == "false":
 				raise ValueError('Condition not allowed')
-			return { "value": self.current_scope.find_variable(condition.value), "processed": True }
+			return { "value": self.current_scope.find_variable(condition["value"]), "processed": True }
 
 
 
-		if (condition.value.count("and") > 0 or condition.value.count("or") > 0):
+		if (condition["value"].count("and") > 0 or condition["value"].count("or") > 0):
 			raise ValueError('Complicated expressions aren\'t implemented yet')
 
-		# split condition.value by " xxx? "
-		sides = re.split(" [a-z][a-z][a-z]? ", condition.value)
+		# split condition["value"] by " xxx? "
+		sides = re.split(" [a-z][a-z][a-z]? ", condition["value"])
 		# at least one side has to be a variable
 		if len(sides) != 2:
 			raise ValueError('Unsupported expression')
@@ -333,17 +333,17 @@ class Toe:
 		if not self.current_scope.is_variable(sides[0]) and not self.current_scope.is_variable(sides[1]):
 			raise ValueError('At least one side has to be a variable')
 
-		if condition.value.find(" gte "):
+		if condition["value"].find(" gte "):
 			return sides[0] >= sides[1]
-		if condition.value.find(" gt "):
+		if condition["value"].find(" gt "):
 			return sides[0] > sides[1]
-		if condition.value.find(" lte "):
+		if condition["value"].find(" lte "):
 			return sides[0] <= sides[1]
-		if condition.value.find(" lt "):
+		if condition["value"].find(" lt "):
 			return sides[0] < sides[1]
-		if condition.value.find(" neq "):
+		if condition["value"].find(" neq "):
 			return sides[0] != sides[1]
-		if condition.value.find(" eq "):
+		if condition["value"].find(" eq "):
 			return sides[0] == sides[1]
 		#default is false
 		return False
@@ -376,6 +376,8 @@ class Variable_Scope:
 	def is_variable(self, variable_name):
 		if self.variables.get(variable_name) is not None:
 			return True
+		if self.parent_scope is None:
+			return False
 		if self.parent_scope.is_variable(variable_name) is not None:
 			return True
 		return False
