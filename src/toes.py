@@ -38,7 +38,7 @@ class Toe:
 				node.setAttribute('lang', lang if lang is not None else 'en')
 
 		template_file = ""
-		if template.endswith(".html") or template.endswith(".htm"):
+		if template.endswith(".toe"):
 			with open(os.path.join(path_to_templates, template)) as f:			
 					template_file = str(f.read())
 		else:
