@@ -35,9 +35,43 @@ class ToeTest(unittest.TestCase):
 		
 
 	def test_toe_create_tag(self):
+		doc = xml.dom.minidom.Document()
+		create_fail = doc.createElement("toe:create")
+		create_fail.setAttribute("var", "num")
+		create_fail.setAttribute("value", 4)
+		with self.assertRaises(ValueError):
+			self.toe.process_create_tag(create_fail)
+		
+		doc = xml.dom.minidom.Document()
+		create_success = doc.createElement("toe:create")
+		create_success.setAttribute("var", "number")
+		create_success.setAttribute("value", 4)
+		self.toe.process_create_tag(create_success)
+		assigned = self.toe.current_scope.find_variable("number")
+		self.assertEqual(assigned, 4)
+
+	def test_toe_modify_tag_decrementation(self):
+		pass
+	
+	def test_toe_modify_tag_incrementation(self):
 		pass
 
-	def test_toe_modify_tag(self):
+	def test_toe_modify_tag_addition(self):
+		pass
+
+	def test_toe_modify_tag_subtraction(self):
+		pass
+
+	def test_toe_modify_tag_multiplication(self):
+		pass
+
+	def test_toe_modify_tag_division(self):
+		pass
+
+	def test_toe_modify_tag_power(self):
+		pass
+
+	def test_toe_modify_tag_module(self):
 		pass
 
 	def test_toe_if_attr(self):
