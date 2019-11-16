@@ -127,7 +127,7 @@ class Toe:
 
 		imported_tree = {}
 
-		if file_name.endswith(".html") or file_name.endswith(".htm"):
+		if file_name.endswith(".toe") or file_name.endswith(".toe"):
 			with open(os.path.join(self.path_to_templates, file_name)) as f:			
 					imported_tree = minidom.parseString(str(f.read()))
 		if type(imported_tree) is xml.dom.minidom.Document:
