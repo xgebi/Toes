@@ -152,7 +152,7 @@ class Toe:
 		if variable is None:
 			raise ValueError('Variable doesn\'t exist')
 
-		variable = var_value
+		self.current_scope.assign_variable(var_name, var_value)
 		return None
 
 	def process_create_tag(self, element):
@@ -387,6 +387,17 @@ class Variable_Scope:
 		if self.parent_scope is not None:
 			return self.parent_scope.find_variable(variable_name)
 		return None
+
+	def assign_variable(self, name, value):
+		if self.is_variable_in_current_scope(name):
+			self.variables[name] = value
+		else:
+			self.parent_scope.assign_variable(name, value)
+
+	def create_variable(self, name, value):
+		if self.is_variable_in_current_scope(name):
+			raise ValueError("Variable already exists")
+		self.variables[name] = value
 
 	def is_variable(self, variable_name):
 		if self.variables.get(variable_name) is not None:

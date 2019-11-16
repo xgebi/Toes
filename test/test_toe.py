@@ -6,7 +6,7 @@ from src.toes import Toe, render_toe, Variable_Scope
 class ToeTest(unittest.TestCase):
 
 	def setUp(self):
-		self.toe = Toe(path_to_templates="test/resources", template="empty.html", data={})
+		self.toe = Toe(path_to_templates="test/resources", template="empty.html", data={ "num": 3})
 	
 	def test_toe_constructor(self):				
 		self.assertNotEqual(self.toe.new_tree, None)
@@ -25,7 +25,14 @@ class ToeTest(unittest.TestCase):
 
 
 	def test_toe_assign_tag(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		assign = doc.createElement("toe:assign")
+		assign.setAttribute("var", "num")
+		assign.setAttribute("value", 4)
+		self.toe.process_assign_tag(assign)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 4)
+		
 
 	def test_toe_create_tag(self):
 		pass

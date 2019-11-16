@@ -29,3 +29,13 @@ class VariableScopeTest(unittest.TestCase):
 	def test_is_variable_in_scope(self):
 		self.assertEqual(self.standalone_scope.is_variable_in_current_scope("var_in_standalone"), True)
 		self.assertEqual(self.standalone_scope.is_variable_in_current_scope("non_existent"), False)
+
+	def test_create_variable(self):
+		with self.assertRaises(ValueError):
+			self.child_scope.create_variable("var_in_child", 10)
+		self.child_scope.create_variable("raichu", 11)
+		self.assertEqual(self.child_scope.find_variable("raichu"), 11)
+
+	def test_assign_variable(self):
+		self.child_scope.create_variable("var_in_parent", 12)
+		self.assertEqual(self.child_scope.find_variable("var_in_parent"), 12)
