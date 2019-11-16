@@ -164,7 +164,37 @@ class ToeTest(unittest.TestCase):
 
 	# toe:value="value"
 	def test_toe_value_attr(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		div = doc.createElement('div')
+		div.setAttribute("toe:if", "num eq 3")
+
+		form_input1 = doc.createElement("input")		
+		form_input1.setAttribute("toe:value", 3)
+		form_input1.setAttribute("type", "text")
+
+		form_input_out1 = doc.createElement("input")
+		form_input_out1.setAttribute("type", "text")
+		self.toe.process_toe_value_attribute(form_input1, form_input_out1)
+		self.assertEqual(form_input_out1.getAttribute("value"), 3)
+
+
+		form_input2 = doc.createElement("input")
+		form_input2.setAttribute("toe:value", "num")
+		form_input2.setAttribute("type", "text")
+
+		form_input_out2 = doc.createElement("input")
+		form_input_out2.setAttribute("type", "text")
+		self.toe.process_toe_value_attribute(form_input2, form_input_out2)
+		self.assertEqual(form_input_out2.getAttribute("value"), 3)
+
+		form_input3 = doc.createElement("input")
+		form_input3.setAttribute("toe:value", "'Hello'")
+		form_input3.setAttribute("type", "text")
+
+		form_input_out3 = doc.createElement("input")
+		form_input_out3.setAttribute("type", "text")
+		self.toe.process_toe_value_attribute(form_input3, form_input_out3)
+		self.assertEqual(form_input_out3.getAttribute("value"), "Hello")
 
 	# toe:attr-[attribute name]="value"
 	def test_toe_custom_attr_attr(self):

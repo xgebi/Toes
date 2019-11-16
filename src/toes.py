@@ -152,7 +152,25 @@ class Toe:
 
 	# toe:value="value"
 	def process_toe_value_attribute(self, tree, new_node):
-		new_node.setAttribute("value", tree.getAttribute("toe:value"))
+		value = tree.getAttribute("toe:value")	
+
+		if type(value) == str and value[0] == "'":
+			new_node.setAttribute("value", value[1: len(value) - 1])
+		else:
+			try:
+				value_int = int(value)
+				value_float = float(value)
+				
+				if value_int == value_float:
+					new_node.setAttribute("value", value_int)
+				else:
+					new_node.setAttribute("value", value_float)
+			except ValueError:
+				resolved_value = self.current_scope.find_variable(value)
+				if  resolved_value is not None:
+					new_node.setAttribute("value", resolved_value)
+				else:
+					raise ValueError('Variable is not defined')
 
 	# toe:attr-[attribute name]="value"
 	def process_toe_attr_attribute(self, tree, new_node, key):
@@ -162,7 +180,7 @@ class Toe:
 	
 	# toe:content="value"
 	def process_toe_content_attribute(self, tree, new_node):
-		new_node.appendChild(self.new_tree.createTextNode(tree.getAttribute(toe:content)))
+		new_node.appendChild(self.new_tree.createTextNode(tree.getAttribute("toe:content")))
 
 	def process_assign_tag(self, element):
 		var_name = element.getAttribute('var')
