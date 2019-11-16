@@ -12,12 +12,7 @@ class ToeTest(unittest.TestCase):
 		self.assertNotEqual(self.toe.new_tree, None)
 		self.assertEqual(type(self.toe.new_tree), xml.dom.minidom.Document)
 
-	# to be removed?
-	def test_subtree(self):
-		pass
-
 	def test_toe_import_tag(self):
-		# <toe:import file="header.html" />
 		doc = xml.dom.minidom.Document()
 		import_node = doc.createElement('toe:import')
 		import_node.setAttribute("file", "import.toe")
@@ -45,18 +40,6 @@ class ToeTest(unittest.TestCase):
 		pass
 
 	def test_toe_while_attr(self):
-		pass
-
-	def test_variable_scope(self):
-		pass
-
-	def test_find_in_scope(self):
-		pass
-
-	def test_find_in_current_scope(self):
-		pass
-
-	def test_is_variable_in_scope(self):
 		pass
 
 if __name__ == '__main__':

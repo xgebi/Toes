@@ -2,7 +2,7 @@ import unittest
 
 from src.toes import Toe, render_toe, Variable_Scope
 
-class ToeTest(unittest.TestCase):
+class ConditionProcessingTest(unittest.TestCase):
 
 	def test_true_false_values(self):
 		toe = Toe(path_to_templates="test/resources", template="empty.html", data={})
