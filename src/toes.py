@@ -110,16 +110,16 @@ class Toe:
 			if not self.process_condition(element.getAttribute('toe:if')):
 				return None
 
-		if element.tagName.find('import'):
+		if element.tagName.find('import') > -1:
 			return self.process_toe_import_tag(parent_element, element)
 
-		if element.tagName.find('assign'):
+		if element.tagName.find('assign') > -1:
 			return self.process_assign_tag(element)
 
-		if element.tagName.find('create'):
+		if element.tagName.find('create') > -1:
 			return self.process_create_tag(element)
 
-		if element.tagName.find('modify'):
+		if element.tagName.find('modify') > -1:
 			return self.process_modify_tag(element)
 
 	def process_toe_import_tag(self, parent_element, element):
@@ -270,21 +270,13 @@ class Toe:
 		# get toe:for attribute
 		iterable_cond = element.getAttribute('toe:while')
 		
-		if iterable_cond.find(" "):
-			contains_condition = False
-			for cond in (" gt ", " gte ", " lt ", " lte ", " eq ", " neq "):
-				if cond in iterable_cond:
-					contains_condition = True
-			
-			if not contains_condition:
-				return None
-		else:
-			iterable_item = self.current_scope.find_variable(iterable_cond)
-			if not isinstance(iterable_item, Iterable):
-				return None
-
-		# create python for loop
-		if iterable_item is None:
+		contains_condition = False
+		for cond in (" gt ", " gte ", " lt ", " lte ", " eq ", " neq "):
+			if cond in iterable_cond:
+				contains_condition = True
+				break
+		
+		if not contains_condition:
 			return None
 
 		element.removeAttribute('toe:while')
@@ -294,8 +286,6 @@ class Toe:
 			local_scope = Variable_Scope({}, self.current_scope)
 			self.current_scope = local_scope
 
-			self.current_scope.variables[items[0]] = thing
-
 			# process subtree
 			result_node = self.process_subtree(parent_element, element)
 			if result_node is not None:
@@ -304,6 +294,7 @@ class Toe:
 			# local scope destruction
 			self.current_scope = self.current_scope.parent_scope
 			local_scope = None
+
 		return result_nodes
 
 	def process_condition(self, condition):		

@@ -6,7 +6,7 @@ from src.toes import Toe, render_toe, Variable_Scope
 class ToeTest(unittest.TestCase):
 
 	def setUp(self):
-		self.toe = Toe(path_to_templates="test/resources", template="empty.toe", data={ "num": 3})
+		self.toe = Toe(path_to_templates="test/resources", template="empty.toe", data={ "num": 3, "items": [1, 2, 3, 4]})
 	
 	def test_toe_constructor(self):				
 		self.assertNotEqual(self.toe.new_tree, None)
@@ -140,9 +140,39 @@ class ToeTest(unittest.TestCase):
 
 	def test_toe_for_attr(self):
 		doc = xml.dom.minidom.Document()
+		div = doc.createElement('div')
+		div.setAttribute("class", "visible")
+		div.setAttribute("toe:for", "item in items")
+		div_text = doc.createTextNode("This is a for loop")
+		div.appendChild(div_text)
+
+		result = self.toe.process_for_attribute(self.toe.new_tree.childNodes[1], div)
+		self.assertEqual(len(result), 4)
 
 	def test_toe_while_attr(self):
 		doc = xml.dom.minidom.Document()
+		div = doc.createElement('div')
+		div.setAttribute("toe:while", "num gte 0")
+		# <toe:modify var="name" toe:dec />
+		dec = doc.createElement("toe:modify")
+		dec.setAttribute("var", "num")
+		dec.setAttribute("toe:dec", None)
+
+		div.appendChild(dec)
+		result = self.toe.process_while_attribute(self.toe.new_tree.childNodes[1], div)
+		self.assertEqual(len(result), 4)
+
+	# toe:value="value"
+	def test_toe_value_attr(self):
+		pass
+
+	# toe:attr-[attribute name]="value"
+	def test_toe_custom_attr_attr(self):
+		pass
+
+	# toe:content="value"
+	def test_toe_content_attr(self):
+		pass
 
 if __name__ == '__main__':
 	unittest.main()

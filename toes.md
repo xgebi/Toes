@@ -79,7 +79,7 @@ Warning: `item` (or different name defined in the expression) will be created in
 
 `<tag toe:while="expression">`
 
-`while` loop in Toe language accepts either an instance of `Iterable` object or a condition which has to have on at least one side variable.
+`while` loop in Toe language accepts condition which has to have on at least one side variable.
 
 Values such as `True` or `3 > 2` are not allowed. On the other hand values such as `False` or `3 < 2` are allowed because they won't do any damage.
 
