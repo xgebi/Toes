@@ -333,19 +333,34 @@ class Toe:
 		if not self.current_scope.is_variable(sides[0]) and not self.current_scope.is_variable(sides[1]):
 			raise ValueError('At least one side has to be a variable')
 
-		if condition["value"].find(" gte "):
-			return sides[0] >= sides[1]
-		if condition["value"].find(" gt "):
-			return sides[0] > sides[1]
-		if condition["value"].find(" lte "):
-			return sides[0] <= sides[1]
-		if condition["value"].find(" lt "):
-			return sides[0] < sides[1]
-		if condition["value"].find(" neq "):
-			return sides[0] != sides[1]
-		if condition["value"].find(" eq "):
-			return sides[0] == sides[1]
-		#default is false
+		#resolve variable
+		resolved = []
+		for idx in range(len(sides)):
+			if sides[idx][0] == "'":
+				resolved.append(sides[idx][1: len(sides[idx]) - 1])
+			else:
+				try:
+					resolved.append(float(sides[idx]))
+				except ValueError:
+					resolved_var = self.current_scope.find_variable(sides[idx])
+					if  resolved_var is not None:
+						resolved.append(resolved_var)
+					else:
+						raise ValueError('Variable is not defined')
+
+
+		if " gte " in condition["value"]:
+			return resolved[0] >= resolved[1]
+		if " gt "  in condition["value"]:
+			return resolved[0] > resolved[1]
+		if " lte "  in condition["value"]:
+			return resolved[0] <= resolved[1]
+		if " lt "  in condition["value"]:
+			return resolved[0] < resolved[1]
+		if " neq "  in condition["value"]:
+			return resolved[0] != resolved[1]
+		if " eq "  in condition["value"]:
+			return resolved[0] == resolved[1]
 		return False
 
 	# Adapted from https://stackoverflow.com/a/16919069/6588356
