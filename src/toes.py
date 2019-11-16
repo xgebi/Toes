@@ -393,7 +393,7 @@ class Variable_Scope:
 			return True
 		if self.parent_scope is None:
 			return False
-		if self.parent_scope.is_variable(variable_name) is not None:
+		if self.parent_scope.is_variable(variable_name):
 			return True
 		return False
 
