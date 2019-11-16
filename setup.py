@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="toes", # Replace with your own username
-    version="0.0.12",
+    version="0.0.13",
     author="Sarah Gebauer",
     author_email="sarah@sarahgebauer.com",
     description="Toe template engine",
@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: Hyppocratic License",
+        "License :: Hippocratic License",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.7',

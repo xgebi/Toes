@@ -6,7 +6,7 @@ from src.toes import Toe, render_toe, Variable_Scope
 class ToeTest(unittest.TestCase):
 
 	def setUp(self):
-		self.toe = Toe(path_to_templates="test/resources", template="empty.html", data={ "num": 3})
+		self.toe = Toe(path_to_templates="test/resources", template="empty.toe", data={ "num": 3})
 	
 	def test_toe_constructor(self):				
 		self.assertNotEqual(self.toe.new_tree, None)
@@ -123,13 +123,26 @@ class ToeTest(unittest.TestCase):
 		self.assertEqual(assigned, 1)
 
 	def test_toe_if_attr(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		div = doc.createElement('div')
+		div.setAttribute("class", "visible")
+		div.setAttribute("toe:if", "num gte 3")
+
+		result = self.toe.process_if_attribute(self.toe.new_tree.childNodes[1], div)
+		self.assertEqual(result.nodeType, xml.dom.minidom.Node.ELEMENT_NODE)
+		self.assertEqual(result.getAttribute("class"), "visible")
+
+		div2 = doc.createElement('div')
+		div2.setAttribute("class", "invisible")
+		div2.setAttribute("toe:if", "num gt 3")
+		result = self.toe.process_if_attribute(self.toe.new_tree.childNodes[1], div2)
+		self.assertEqual(result, None)
 
 	def test_toe_for_attr(self):
-		pass
+		doc = xml.dom.minidom.Document()
 
 	def test_toe_while_attr(self):
-		pass
+		doc = xml.dom.minidom.Document()
 
 if __name__ == '__main__':
 	unittest.main()
