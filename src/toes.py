@@ -214,7 +214,7 @@ class Toe:
 		if element.hasAttribute('toe:mod'):
 			if (type(variable) == int or type(variable) == float):
 				if (float(element.getAttribute('toe:mod')) != 0):
-					if (float(element.getAttribute('toe:div')) != 0):
+					if (float(element.getAttribute('toe:mod')) != 0):
 						self.current_scope.assign_variable(var_name, variable % float(element.getAttribute('toe:mod')))
 					return None
 				raise ZeroDivisionError()

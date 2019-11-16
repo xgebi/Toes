@@ -76,21 +76,51 @@ class ToeTest(unittest.TestCase):
 		self.toe.process_modify_tag(addition)
 		assigned = self.toe.current_scope.find_variable("num")
 		self.assertEqual(assigned, 5)
-		
+
 	def test_toe_modify_tag_subtraction(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		subtraction = doc.createElement("toe:modify")
+		subtraction.setAttribute("var", "num")
+		subtraction.setAttribute("toe:sub", 5)
+		self.toe.process_modify_tag(subtraction)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, -2)
 
 	def test_toe_modify_tag_multiplication(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		multiplication = doc.createElement("toe:modify")
+		multiplication.setAttribute("var", "num")
+		multiplication.setAttribute("toe:mul", 2)
+		self.toe.process_modify_tag(multiplication)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 6)
 
 	def test_toe_modify_tag_division(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		division = doc.createElement("toe:modify")
+		division.setAttribute("var", "num")
+		division.setAttribute("toe:div", 2)
+		self.toe.process_modify_tag(division)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 1.5)
 
 	def test_toe_modify_tag_power(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		power = doc.createElement("toe:modify")
+		power.setAttribute("var", "num")
+		power.setAttribute("toe:pow", 3)
+		self.toe.process_modify_tag(power)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 27)
 
 	def test_toe_modify_tag_module(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		module = doc.createElement("toe:modify")
+		module.setAttribute("var", "num")
+		module.setAttribute("toe:mod", 2)
+		self.toe.process_modify_tag(module)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 1)
 
 	def test_toe_if_attr(self):
 		pass
