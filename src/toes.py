@@ -174,7 +174,7 @@ class Toe:
 
 	# toe:attr-[attribute name]="value"
 	def process_toe_attr_attribute(self, tree, new_node, key):
-		new_key = key[key.find("-"):]
+		new_key = key[key.find("-") + 1:]
 		value = tree.getAttribute(key)
 
 		if type(value) == str and value[0] == "'":
@@ -207,13 +207,13 @@ class Toe:
 				value_float = float(value)
 				
 				if value_int == value_float:
-					new_node.appendChild(self.new_tree.createTextNode(value_int))
+					new_node.appendChild(self.new_tree.createTextNode(str(value_int)))
 				else:
-					new_node.appendChild(self.new_tree.createTextNode(value_float))
+					new_node.appendChild(self.new_tree.createTextNode(str(value_float)))
 			except ValueError:
 				resolved_value = self.current_scope.find_variable(value)
 				if  resolved_value is not None:
-					new_node.appendChild(self.new_tree.createTextNode(resolved_value))
+					new_node.appendChild(self.new_tree.createTextNode(str(resolved_value)))
 				else:
 					raise ValueError('Variable is not defined')
 

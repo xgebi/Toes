@@ -165,8 +165,6 @@ class ToeTest(unittest.TestCase):
 	# toe:value="value"
 	def test_toe_value_attr(self):
 		doc = xml.dom.minidom.Document()
-		div = doc.createElement('div')
-		div.setAttribute("toe:if", "num eq 3")
 
 		form_input1 = doc.createElement("input")		
 		form_input1.setAttribute("toe:value", 3)
@@ -198,11 +196,67 @@ class ToeTest(unittest.TestCase):
 
 	# toe:attr-[attribute name]="value"
 	def test_toe_custom_attr_attr(self):
-		pass
+		doc = xml.dom.minidom.Document()
+
+		form_input1 = doc.createElement("input")		
+		form_input1.setAttribute("toe:attr-my-attr", 3)
+		form_input1.setAttribute("type", "text")
+
+		form_input_out1 = doc.createElement("input")
+		form_input_out1.setAttribute("type", "text")
+		self.toe.process_toe_attr_attribute(form_input1, form_input_out1, "toe:attr-my-attr")
+		self.assertEqual(form_input_out1.getAttribute("my-attr"), 3)
+
+
+		form_input2 = doc.createElement("input")
+		form_input2.setAttribute("toe:attr-my-attr", "num")
+		form_input2.setAttribute("type", "text")
+
+		form_input_out2 = doc.createElement("input")
+		form_input_out2.setAttribute("type", "text")
+		self.toe.process_toe_attr_attribute(form_input2, form_input_out2, "toe:attr-my-attr")
+		self.assertEqual(form_input_out2.getAttribute("my-attr"), 3)
+
+		form_input3 = doc.createElement("input")
+		form_input3.setAttribute("toe:attr-my-attr", "'Hello'")
+		form_input3.setAttribute("type", "text")
+
+		form_input_out3 = doc.createElement("input")
+		form_input_out3.setAttribute("type", "text")
+		self.toe.process_toe_attr_attribute(form_input3, form_input_out3, "toe:attr-my-attr")
+		self.assertEqual(form_input_out3.getAttribute("my-attr"), "Hello")
 
 	# toe:content="value"
 	def test_toe_content_attr(self):
-		pass
+		doc = xml.dom.minidom.Document()
+
+		div1 = doc.createElement("div")
+		div1.setAttribute("toe:content", 3)
+
+		div_out1 = doc.createElement("div")
+		self.toe.process_toe_content_attribute(div1, div_out1)
+		self.assertEqual(len(div_out1.childNodes), 1)
+		self.assertEqual(div_out1.childNodes[0].nodeType, xml.dom.minidom.Node.TEXT_NODE)
+		self.assertEqual(div_out1.childNodes[0].nodeValue, '3')
+
+
+		div2 = doc.createElement("div")
+		div2.setAttribute("toe:content", "num")
+
+		div_out2 = doc.createElement("div")
+		self.toe.process_toe_content_attribute(div2, div_out2)
+		self.assertEqual(len(div_out2.childNodes), 1)
+		self.assertEqual(div_out2.childNodes[0].nodeType, xml.dom.minidom.Node.TEXT_NODE)
+		self.assertEqual(div_out2.childNodes[0].nodeValue, '3')
+
+		div3 = doc.createElement("div")
+		div3.setAttribute("toe:content", "'Hello'")
+
+		div_out3 = doc.createElement("div")
+		self.toe.process_toe_content_attribute(div3, div_out3)
+		self.assertEqual(len(div_out3.childNodes), 1)
+		self.assertEqual(div_out3.childNodes[0].nodeType, xml.dom.minidom.Node.TEXT_NODE)
+		self.assertEqual(div_out3.childNodes[0].nodeValue, "Hello")
 
 if __name__ == '__main__':
 	unittest.main()
