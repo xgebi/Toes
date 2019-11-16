@@ -51,14 +51,32 @@ class ToeTest(unittest.TestCase):
 		self.assertEqual(assigned, 4)
 
 	def test_toe_modify_tag_decrementation(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		decrease = doc.createElement("toe:modify")
+		decrease.setAttribute("var", "num")
+		decrease.setAttribute("toe:dec", None)
+		self.toe.process_modify_tag(decrease)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 2)
 	
 	def test_toe_modify_tag_incrementation(self):
-		pass
+		doc = xml.dom.minidom.Document()
+		increase = doc.createElement("toe:modify")
+		increase.setAttribute("var", "num")
+		increase.setAttribute("toe:inc", None)
+		self.toe.process_modify_tag(increase)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 4)
 
 	def test_toe_modify_tag_addition(self):
-		pass
-
+		doc = xml.dom.minidom.Document()
+		addition = doc.createElement("toe:modify")
+		addition.setAttribute("var", "num")
+		addition.setAttribute("toe:add", 2)
+		self.toe.process_modify_tag(addition)
+		assigned = self.toe.current_scope.find_variable("num")
+		self.assertEqual(assigned, 5)
+		
 	def test_toe_modify_tag_subtraction(self):
 		pass
 

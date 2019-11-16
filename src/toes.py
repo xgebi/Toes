@@ -181,45 +181,48 @@ class Toe:
 
 		if element.hasAttribute('toe:inc'):
 			if type(variable) == int or type(variable) == float:
-				variable += 1
+				self.current_scope.assign_variable(var_name, variable + 1)
 				return None
 		
 		if element.hasAttribute('toe:dec'):
 			if type(variable) == int or type(variable) == float:
-				variable -= 1
+				self.current_scope.assign_variable(var_name, variable - 1)
 				return None
 
 		if element.hasAttribute('toe:add'):
 			if (type(variable) == int or type(variable) == float):
-				variable += float(element.getAttribute('toe:add'))
+				self.current_scope.assign_variable(var_name, variable + float(element.getAttribute('toe:add')))
 				return None
 
 		if element.hasAttribute('toe:sub'):
 			if (type(variable) == int or type(variable) == float):
-				variable -= float(element.getAttribute('toe:sub'))
+				self.current_scope.assign_variable(var_name, variable - float(element.getAttribute('toe:sub')))
 				return None
 
 		if element.hasAttribute('toe:mul'):
 			if (type(variable) == int or type(variable) == float):
-				variable -= float(element.getAttribute('toe:mul'))
+				self.current_scope.assign_variable(var_name, variable * float(element.getAttribute('toe:mul')))
 				return None
 
 		if element.hasAttribute('toe:div'):
 			if (type(variable) == int or type(variable) == float):
 				if (float(element.getAttribute('toe:div')) != 0):
-					variable -= float(element.getAttribute('toe:div'))
+					self.current_scope.assign_variable(var_name, variable / float(element.getAttribute('toe:div')))
 					return None
+				raise ZeroDivisionError()
 
 		if element.hasAttribute('toe:mod'):
 			if (type(variable) == int or type(variable) == float):
 				if (float(element.getAttribute('toe:mod')) != 0):
-					variable =variable % float(element.getAttribute('toe:mod'))
+					if (float(element.getAttribute('toe:div')) != 0):
+						self.current_scope.assign_variable(var_name, variable % float(element.getAttribute('toe:mod')))
 					return None
+				raise ZeroDivisionError()
 
 		if element.hasAttribute('toe:pow'):
 			if (type(variable) == int or type(variable) == float):
-					variable = variable ** float(element.getAttribute('toe:pow'))
-					return None
+				self.current_scope.assign_variable(var_name, variable ** float(element.getAttribute('toe:pow')))
+				return None
 
 		return None
 
