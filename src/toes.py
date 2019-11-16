@@ -174,13 +174,48 @@ class Toe:
 
 	# toe:attr-[attribute name]="value"
 	def process_toe_attr_attribute(self, tree, new_node, key):
-		key_split = key.split("-")
+		new_key = key[key.find("-"):]
+		value = tree.getAttribute(key)
 
-		new_node.setAttribute(key_split[1], tree.getAttribute(key))
+		if type(value) == str and value[0] == "'":
+			new_node.setAttribute(new_key, value[1: len(value) - 1])
+		else:
+			try:
+				value_int = int(value)
+				value_float = float(value)
+				
+				if value_int == value_float:
+					new_node.setAttribute(new_key, value_int)
+				else:
+					new_node.setAttribute(new_key, value_float)
+			except ValueError:
+				resolved_value = self.current_scope.find_variable(value)
+				if  resolved_value is not None:
+					new_node.setAttribute(new_key, resolved_value)
+				else:
+					raise ValueError('Variable is not defined')
 	
 	# toe:content="value"
 	def process_toe_content_attribute(self, tree, new_node):
-		new_node.appendChild(self.new_tree.createTextNode(tree.getAttribute("toe:content")))
+		value = tree.getAttribute("toe:content")	
+
+		if type(value) == str and value[0] == "'":
+			new_node.appendChild(self.new_tree.createTextNode(value[1: len(value) - 1]))
+		else:
+			try:
+				value_int = int(value)
+				value_float = float(value)
+				
+				if value_int == value_float:
+					new_node.appendChild(self.new_tree.createTextNode(value_int))
+				else:
+					new_node.appendChild(self.new_tree.createTextNode(value_float))
+			except ValueError:
+				resolved_value = self.current_scope.find_variable(value)
+				if  resolved_value is not None:
+					new_node.appendChild(self.new_tree.createTextNode(resolved_value))
+				else:
+					raise ValueError('Variable is not defined')
 
 	def process_assign_tag(self, element):
 		var_name = element.getAttribute('var')
