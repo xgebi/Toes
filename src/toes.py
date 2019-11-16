@@ -86,13 +86,21 @@ class Toe:
 			if attribute == 'toe:for':
 				return self.process_for_attribute(new_tree_parent, tree)	
 			if attribute == 'toe:while':
-				return self.process_while_attribute(new_tree_parent, tree)			
+				return self.process_while_attribute(new_tree_parent, tree)		
+			
 
 		# append regular element to parent element
 		new_tree_node = self.new_tree.createElement(tree.tagName)
 		if tree.attributes is not None or len(tree.attributes) > 0:
 			for key in tree.attributes.keys():
-				new_tree_node.setAttribute(key, tree.getAttribute(key))
+				if key == 'toe:value':
+					self.process_toe_value_attribute(tree, new_tree_node)
+				elif key == 'toe:attr':
+					self.process_toe_attr_attribute(tree, new_tree_node, key)
+				elif key == 'toe:content':
+					self.process_toe_content_attribute(tree, new_tree_node)				
+				else:
+					new_tree_node.setAttribute(key, tree.getAttribute(key))
 
 		for node in tree.childNodes:			
 			res = self.process_subtree(new_tree_node, node)
@@ -140,6 +148,21 @@ class Toe:
 				top_node.appendChild(new_node)
 			return top_node
 		return None
+
+
+	# toe:value="value"
+	def process_toe_value_attribute(self, tree, new_node):
+		new_node.setAttribute("value", tree.getAttribute("toe:value"))
+
+	# toe:attr-[attribute name]="value"
+	def process_toe_attr_attribute(self, tree, new_node, key):
+		key_split = key.split("-")
+
+		new_node.setAttribute(key_split[1], tree.getAttribute(key))
+	
+	# toe:content="value"
+	def process_toe_content_attribute(self, tree, new_node):
+		new_node.appendChild(self.new_tree.createTextNode(tree.getAttribute(toe:content)))
 
 	def process_assign_tag(self, element):
 		var_name = element.getAttribute('var')
