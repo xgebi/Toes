@@ -115,7 +115,7 @@ class Toe:
 
 	def process_toe_tag(self, parent_element, element):
 		if len(element.getAttribute('toe:if')) > 0:
-			if not self.process_condition(element.getAttribute('toe:if')):
+			if not self.process_condition(element.getAttribute('toe:if'))["value"]:
 				return None
 
 		if element.tagName.find('import') > -1:
@@ -387,7 +387,7 @@ class Toe:
 		if condition["value"].find(" ") == -1:
 			if condition["value"].lower() == "true" or condition["value"].lower() == "false":
 				raise ValueError('Condition not allowed')
-			return { "value": self.current_scope.find_variable(condition["value"]), "processed": True }
+			return self.current_scope.find_variable(condition["value"])
 
 
 
