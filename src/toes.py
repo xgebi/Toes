@@ -107,8 +107,12 @@ class Toe:
 
 			if type(res) is list:
 				for temp_node in res:
+					if len(new_tree_node.childNodes) > 0 and new_tree_node.childNodes[-1].nodeType == Node.TEXT_NODE:
+						new_tree_node.childNodes[-1].replaceWholeText(new_tree_node.childNodes[-1].wholeText + " ")
 					new_tree_node.appendChild(temp_node)	
 			if res is not None:
+				if len(new_tree_node.childNodes) > 0 and new_tree_node.childNodes[-1].nodeType == Node.TEXT_NODE:
+					new_tree_node.childNodes[-1].replaceWholeText(new_tree_node.childNodes[-1].wholeText + " ")
 				new_tree_node.appendChild(res)
 
 		return new_tree_node
@@ -145,6 +149,8 @@ class Toe:
 			top_node = self.new_tree.createElement(imported_tree.childNodes[0].childNodes[0].tagName)
 			for child_node in imported_tree.childNodes[0].childNodes[0].childNodes:				
 				new_node = self.process_subtree(top_node, child_node)
+				if len(top_node.childNodes) >= 1 and top_node.childNodes[-1].nodeType == Node.TEXT_NODE:
+					top_node.childNodes[-1].replaceWholeText(top_node.childNodes[-1].wholeText + " ")
 				top_node.appendChild(new_node)
 			return top_node
 		return None
@@ -213,7 +219,7 @@ class Toe:
 				if  resolved_value is not None:
 					new_node.appendChild(self.new_tree.createTextNode(str(resolved_value)))
 				else:
-					raise ValueError('Variable is not defined')
+					new_node.appendChild(self.new_tree.createTextNode(str(tree.childNodes[0].wholeText) if tree.childNodes[0].nodeType == Node.TEXT_NODE else ""))
 
 	def process_assign_tag(self, element):
 		var_name = element.getAttribute('var')
