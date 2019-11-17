@@ -91,6 +91,7 @@ class Toe:
 
 		# append regular element to parent element
 		new_tree_node = self.new_tree.createElement(tree.tagName)
+		content_set = False
 		if tree.attributes is not None or len(tree.attributes) > 0:
 			for key in tree.attributes.keys():
 				if key == 'toe:value':
@@ -98,22 +99,23 @@ class Toe:
 				elif key == 'toe:attr':
 					self.process_toe_attr_attribute(tree, new_tree_node, key)
 				elif key == 'toe:content':
+					content_set = True
 					self.process_toe_content_attribute(tree, new_tree_node)				
 				else:
 					new_tree_node.setAttribute(key, tree.getAttribute(key))
+		if not content_set:
+			for node in tree.childNodes:			
+				res = self.process_subtree(new_tree_node, node)
 
-		for node in tree.childNodes:			
-			res = self.process_subtree(new_tree_node, node)
-
-			if type(res) is list:
-				for temp_node in res:
+				if type(res) is list:
+					for temp_node in res:
+						if len(new_tree_node.childNodes) > 0 and new_tree_node.childNodes[-1].nodeType == Node.TEXT_NODE:
+							new_tree_node.childNodes[-1].replaceWholeText(new_tree_node.childNodes[-1].wholeText + " ")
+						new_tree_node.appendChild(temp_node)	
+				if res is not None:
 					if len(new_tree_node.childNodes) > 0 and new_tree_node.childNodes[-1].nodeType == Node.TEXT_NODE:
 						new_tree_node.childNodes[-1].replaceWholeText(new_tree_node.childNodes[-1].wholeText + " ")
-					new_tree_node.appendChild(temp_node)	
-			if res is not None:
-				if len(new_tree_node.childNodes) > 0 and new_tree_node.childNodes[-1].nodeType == Node.TEXT_NODE:
-					new_tree_node.childNodes[-1].replaceWholeText(new_tree_node.childNodes[-1].wholeText + " ")
-				new_tree_node.appendChild(res)
+					new_tree_node.appendChild(res)
 
 		return new_tree_node
 
