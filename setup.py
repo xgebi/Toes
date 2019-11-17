@@ -5,14 +5,15 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="toes", # Replace with your own username
-    version="0.0.17",
+    version="0.0.22",
     author="Sarah Gebauer",
     author_email="sarah@sarahgebauer.com",
     description="Toe template engine",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/xgebi/Toes",
-    packages=setuptools.find_packages(),
+    package_dir={'toes': 'src'},
+    packages=['toes'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: Hippocratic License",

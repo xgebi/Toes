@@ -8,11 +8,11 @@ from collections.abc import Iterable
 import re
 
 
-def render_toe(*args, template, path_to_templates, **kwargs):
+def render_toe(*args, template, path_to_templates, data=None, **kwargs):
 	if path_to_templates is None:
 		return None
 
-	toe_engine = Toe(path_to_templates, template, kwargs)
+	toe_engine = Toe(path_to_templates, template, data=data,**kwargs)
 	return toe_engine.process_tree()
 
 class Toe:
@@ -23,7 +23,7 @@ class Toe:
 	variables = None
 	current_scope = None
 
-	def __init__(self, path_to_templates, template, data):
+	def __init__(self, path_to_templates, template, data=None, **kwargs):
 		self.path_to_templates = path_to_templates
 		self.variables = Variable_Scope(data, None)
 		self.current_scope = self.variables
@@ -447,7 +447,7 @@ class Variable_Scope:
 	parent_scope = None
 
 	def __init__(self, variable_dict, parent_scope = None):
-		self.variables = variable_dict
+		self.variables = variable_dict if variable_dict is not None else {}
 		self.parent_scope = parent_scope
 
 	def find_variable(self, variable_name):
