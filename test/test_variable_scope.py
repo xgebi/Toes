@@ -9,7 +9,7 @@ class VariableScopeTest(unittest.TestCase):
 		parent_scope = Variable_Scope({ "var_in_parent": 3 }, None)
 		self.child_scope = Variable_Scope({ "var_in_child": 4 }, parent_scope=parent_scope)
 
-		self.standalone_scope = Variable_Scope({ "var_in_standalone": 5 }, None)
+		self.standalone_scope = Variable_Scope({ "var_in_standalone": 5, "dct": { "item": 100 } }, None)
 
 
 	def test_variable_scope(self):
@@ -20,11 +20,13 @@ class VariableScopeTest(unittest.TestCase):
 		self.assertEqual(self.child_scope.is_variable("var_in_child"), True)
 		self.assertEqual(self.child_scope.is_variable("var_in_parent"), True)
 		self.assertEqual(self.child_scope.is_variable("pikachu"), False)
+		self.assertEqual(self.standalone_scope.is_variable("dct['item']"), True)
 
 	def test_find_variable(self):
 		self.assertEqual(self.child_scope.find_variable("var_in_child"), 4)
 		self.assertEqual(self.child_scope.find_variable("var_in_parent"), 3)
 		self.assertEqual(self.child_scope.find_variable("pikachu"), None)
+		self.assertEqual(self.standalone_scope.find_variable("dct['item']"), 100)
 
 	def test_is_variable_in_scope(self):
 		self.assertEqual(self.standalone_scope.is_variable_in_current_scope("var_in_standalone"), True)

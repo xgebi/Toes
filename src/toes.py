@@ -169,8 +169,6 @@ class Toe:
 				resolved_value = self.current_scope.find_variable(value)
 				if  resolved_value is not None:
 					new_node.setAttribute("value", resolved_value)
-				else:
-					raise ValueError('Variable is not defined')
 
 	# toe:attr-[attribute name]="value"
 	def process_toe_attr_attribute(self, tree, new_node, key):
@@ -451,8 +449,21 @@ class Variable_Scope:
 		self.parent_scope = parent_scope
 
 	def find_variable(self, variable_name):
+		names = []
+		if variable_name.find("['") > -1:
+			names = variable_name.split("['")
+			variable_name = names[0]
+
 		if self.variables.get(variable_name) is not None:
-			return self.variables[variable_name]
+			if len(names) > 0:
+				res = self.variables[names[0]]
+				for nidx in range(len(names) - 1):
+					if names[nidx + 1][-1] == "]":
+						names[nidx + 1] = names[nidx + 1][:-2]
+					res = res.get(names[nidx + 1])
+				return res			 
+			else:
+				return self.variables[variable_name]
 		
 		if self.parent_scope is not None:
 			return self.parent_scope.find_variable(variable_name)
@@ -470,8 +481,23 @@ class Variable_Scope:
 		self.variables[name] = value
 
 	def is_variable(self, variable_name):
+		names = []
+		if variable_name.find("['") > -1:
+			names = variable_name.split("['")
+			variable_name = names[0]
+
 		if self.variables.get(variable_name) is not None:
-			return True
+			if len(names) > 0:
+				res = self.variables[names[0]]
+				for nidx in range(len(names) - 1):
+					if names[nidx + 1][-1] == "]":
+						names[nidx + 1] = names[nidx + 1][:-2]
+					res = res.get(names[nidx + 1])
+				return res is not None		 
+			else:
+				return True
+
+
 		if self.parent_scope is None:
 			return False
 		if self.parent_scope.is_variable(variable_name):
