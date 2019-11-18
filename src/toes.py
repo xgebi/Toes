@@ -96,7 +96,7 @@ class Toe:
 			for key in tree.attributes.keys():
 				if key == 'toe:value':
 					self.process_toe_value_attribute(tree, new_tree_node)
-				elif key == 'toe:attr':
+				elif key.startswith('toe:attr'):
 					self.process_toe_attr_attribute(tree, new_tree_node, key)
 				elif key == 'toe:content':
 					content_set = True
@@ -166,66 +166,106 @@ class Toe:
 	def process_toe_value_attribute(self, tree, new_node):
 		value = tree.getAttribute("toe:value")	
 
-		if type(value) == str and value[0] == "'":
-			new_node.setAttribute("value", value[1: len(value) - 1])
-		else:
-			try:
-				value_int = int(value)
-				value_float = float(value)
-				
-				if value_int == value_float:
-					new_node.setAttribute("value", value_int)
+		try:
+			value_int = int(value)
+			value_float = float(value)
+			
+			if value_int == value_float:
+				new_node.setAttribute("value", value_int)
+			else:
+				new_node.setAttribute("value", value_float)
+		except ValueError:
+			if re.search(r"'?[ ]?\+[ ]?'?", value) is None:
+				if type(value) == str and value[0] == "'":
+					new_node.setAttribute("value", value[1: len(value) - 1])
 				else:
-					new_node.setAttribute("value", value_float)
-			except ValueError:
-				resolved_value = self.current_scope.find_variable(value)
-				if  resolved_value is not None:
-					new_node.setAttribute("value", resolved_value)
+					resolved_value = self.current_scope.find_variable(value)
+					if  resolved_value is not None:
+						new_node.setAttribute("value", resolved_value)
+			else:
+				var_arr = re.split(r"'?[ ]?\+[ ]?'?", value)
+				if var_arr is None:
+					return
+				result = ""
+				for item in var_arr:
+					if item[0] == "'":
+						result += item[1: len(value) - 1]
+					else:
+						resolved_value = self.current_scope.find_variable(item)
+						result += resolved_value if item is not None else ""
+
+				new_node.setAttribute("value", result)
 
 	# toe:attr-[attribute name]="value"
 	def process_toe_attr_attribute(self, tree, new_node, key):
 		new_key = key[key.find("-") + 1:]
 		value = tree.getAttribute(key)
 
-		if type(value) == str and value[0] == "'":
-			new_node.setAttribute(new_key, value[1: len(value) - 1])
-		else:
-			try:
-				value_int = int(value)
-				value_float = float(value)
-				
-				if value_int == value_float:
-					new_node.setAttribute(new_key, value_int)
+		try:
+			value_int = int(value)
+			value_float = float(value)
+			
+			if value_int == value_float:
+				new_node.setAttribute(new_key, value_int)
+			else:
+				new_node.setAttribute(new_key, value_float)
+		except ValueError:
+			if re.search(r"'?[ ]?\+[ ]?'?", value) is None:
+				if type(value) == str and value[0] == "'":
+					new_node.setAttribute(new_key, value[1: len(value) - 1])
 				else:
-					new_node.setAttribute(new_key, value_float)
-			except ValueError:
-				resolved_value = self.current_scope.find_variable(value)
-				if  resolved_value is not None:
-					new_node.setAttribute(new_key, resolved_value)
-				else:
-					raise ValueError('Variable is not defined')
+					resolved_value = self.current_scope.find_variable(value)
+					if  resolved_value is not None:
+						new_node.setAttribute(new_key, resolved_value)
+			else:
+				var_arr = re.split(r"'?[ ]?\+[ ]?'?", value)
+				if var_arr is None:
+					return
+				result = ""
+				for item in var_arr:
+					if item[0] == "'":
+						result += item[1: len(value) - 1]
+					else:
+						resolved_value = self.current_scope.find_variable(item)
+						result += resolved_value if item is not None else ""
+
+				new_node.setAttribute(new_key, result)
 	
 	# toe:content="value"
 	def process_toe_content_attribute(self, tree, new_node):
 		value = tree.getAttribute("toe:content")	
+		
+		try:
+			value_int = int(value)
+			value_float = float(value)
+			
+			if value_int == value_float:
+				new_node.appendChild(self.new_tree.createTextNode(str(value_int)))
+			else:
+				new_node.appendChild(self.new_tree.createTextNode(str(value_float)))
+		except ValueError:
+			if re.search(r"'?[ ]?\+[ ]?'?", value) is None:
+				if type(value) == str and value[0] == "'":
+					new_node.appendChild(self.new_tree.createTextNode(value[1: len(value) - 1]))
+				else:
+					resolved_value = self.current_scope.find_variable(value)
+					if  resolved_value is not None:
+						new_node.appendChild(self.new_tree.createTextNode(str(resolved_value)))
+					else:
+						new_node.appendChild(self.new_tree.createTextNode(str(tree.childNodes[0].wholeText) if tree.childNodes[0].nodeType == Node.TEXT_NODE else ""))
+			else:
+				var_arr = re.split(r"'?[ ]?\+[ ]?'?", value)
+				if var_arr is None:
+					return
+				result = ""
+				for item in var_arr:
+					if item[0] == "'":
+						result += item[1: len(value) - 1]
+					else:
+						resolved_value = self.current_scope.find_variable(item)
+						result += resolved_value if item is not None else ""
 
-		if type(value) == str and value[0] == "'":
-			new_node.appendChild(self.new_tree.createTextNode(value[1: len(value) - 1]))
-		else:
-			try:
-				value_int = int(value)
-				value_float = float(value)
-				
-				if value_int == value_float:
-					new_node.appendChild(self.new_tree.createTextNode(str(value_int)))
-				else:
-					new_node.appendChild(self.new_tree.createTextNode(str(value_float)))
-			except ValueError:
-				resolved_value = self.current_scope.find_variable(value)
-				if  resolved_value is not None:
-					new_node.appendChild(self.new_tree.createTextNode(str(resolved_value)))
-				else:
-					new_node.appendChild(self.new_tree.createTextNode(str(tree.childNodes[0].wholeText) if tree.childNodes[0].nodeType == Node.TEXT_NODE else ""))
+				new_node.appendChild(self.new_tree.createTextNode(str(result)))
 
 	def process_assign_tag(self, element):
 		var_name = element.getAttribute('var')
