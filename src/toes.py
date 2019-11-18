@@ -115,7 +115,11 @@ class Toe:
 				if res is not None:
 					if len(new_tree_node.childNodes) > 0 and new_tree_node.childNodes[-1].nodeType == Node.TEXT_NODE:
 						new_tree_node.childNodes[-1].replaceWholeText(new_tree_node.childNodes[-1].wholeText + " ")
-					new_tree_node.appendChild(res)
+					if type(res) is list:
+						for thing in res:				
+							new_tree_node.appendChild(thing)
+					else:
+						new_tree_node.appendChild(res)
 
 		return new_tree_node
 
