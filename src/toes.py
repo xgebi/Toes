@@ -175,7 +175,7 @@ class Toe:
 			else:
 				new_node.setAttribute("value", value_float)
 		except ValueError:
-			if re.search(r"'?[ ]?\+[ ]?'?", value) is None:
+			if re.search(r"[ ]?\+[ ]?", value) is None:
 				if type(value) == str and value[0] == "'":
 					new_node.setAttribute("value", value[1: len(value) - 1])
 				else:
@@ -183,13 +183,13 @@ class Toe:
 					if  resolved_value is not None:
 						new_node.setAttribute("value", resolved_value)
 			else:
-				var_arr = re.split(r"'?[ ]?\+[ ]?'?", value)
+				var_arr = re.split(r"[ ]?\+[ ]?", value)
 				if var_arr is None:
 					return
 				result = ""
 				for item in var_arr:
 					if item[0] == "'":
-						result += item[1: len(value) - 1]
+						result += item[1: len(item) - 1]
 					else:
 						resolved_value = self.current_scope.find_variable(item)
 						result += resolved_value if item is not None else ""
@@ -210,7 +210,7 @@ class Toe:
 			else:
 				new_node.setAttribute(new_key, value_float)
 		except ValueError:
-			if re.search(r"'?[ ]?\+[ ]?'?", value) is None:
+			if re.search(r"[ ]?\+[ ]?", value) is None:
 				if type(value) == str and value[0] == "'":
 					new_node.setAttribute(new_key, value[1: len(value) - 1])
 				else:
@@ -218,13 +218,13 @@ class Toe:
 					if  resolved_value is not None:
 						new_node.setAttribute(new_key, resolved_value)
 			else:
-				var_arr = re.split(r"'?[ ]?\+[ ]?'?", value)
+				var_arr = re.split(r"[ ]?\+[ ]?", value)
 				if var_arr is None:
 					return
 				result = ""
 				for item in var_arr:
 					if item[0] == "'":
-						result += item[1: len(value) - 1]
+						result += item[1: len(item) - 1]
 					else:
 						resolved_value = self.current_scope.find_variable(item)
 						result += resolved_value if item is not None else ""
@@ -244,7 +244,7 @@ class Toe:
 			else:
 				new_node.appendChild(self.new_tree.createTextNode(str(value_float)))
 		except ValueError:
-			if re.search(r"'?[ ]?\+[ ]?'?", value) is None:
+			if re.search(r"[ ]?\+[ ]?", value) is None:
 				if type(value) == str and value[0] == "'":
 					new_node.appendChild(self.new_tree.createTextNode(value[1: len(value) - 1]))
 				else:
@@ -254,13 +254,13 @@ class Toe:
 					else:
 						new_node.appendChild(self.new_tree.createTextNode(str(tree.childNodes[0].wholeText) if tree.childNodes[0].nodeType == Node.TEXT_NODE else ""))
 			else:
-				var_arr = re.split(r"'?[ ]?\+[ ]?'?", value)
+				var_arr = re.split(r"[ ]?\+[ ]?", value)
 				if var_arr is None:
 					return
 				result = ""
 				for item in var_arr:
 					if item[0] == "'":
-						result += item[1: len(value) - 1]
+						result += item[1: len(item) - 1]
 					else:
 						resolved_value = self.current_scope.find_variable(item)
 						result += resolved_value if item is not None else ""
