@@ -100,7 +100,10 @@ class Toe:
 					self.process_toe_attr_attribute(tree, new_tree_node, key)
 				elif key == 'toe:content':
 					content_set = True
-					self.process_toe_content_attribute(tree, new_tree_node)				
+					self.process_toe_content_attribute(tree, new_tree_node)		
+				elif key == 'toe:structured-content':
+					content_set = True
+					self.process_toe_structured_content_attribute(tree, new_tree_node)
 				else:
 					new_tree_node.setAttribute(key, tree.getAttribute(key))
 		if not content_set:
@@ -442,16 +445,16 @@ class Toe:
 
 
 		if (condition["value"].count("and") > 0 or condition["value"].count("or") > 0):
-			raise ValueError('Complicated expressions aren\'t implemented yet')
+			return False
 
 		# split condition["value"] by " xxx? "
 		sides = re.split(" [a-z][a-z][a-z]? ", condition["value"])
 		# at least one side has to be a variable
 		if len(sides) != 2:
-			raise ValueError('Unsupported expression')
+			return False
 
 		if not self.current_scope.is_variable(sides[0]) and not self.current_scope.is_variable(sides[1]):
-			raise ValueError('At least one side has to be a variable')
+			return False
 
 		#resolve variable
 		resolved = []
@@ -466,7 +469,7 @@ class Toe:
 					if  resolved_var is not None:
 						resolved.append(resolved_var)
 					else:
-						raise ValueError('Variable is not defined')
+						return False
 
 
 		if " gte " in condition["value"]:
