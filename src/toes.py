@@ -2,6 +2,8 @@ from xml.dom import minidom
 from xml.dom.minidom import Node
 import xml
 
+import uuid
+
 from pathlib import Path
 import os
 from collections.abc import Iterable
@@ -22,6 +24,7 @@ class Toe:
 	template_load_error = False
 	variables = None
 	current_scope = None
+	later_replacement = {}
 
 	def __init__(self, path_to_templates, template, data=None, **kwargs):
 		self.path_to_templates = path_to_templates
@@ -59,8 +62,22 @@ class Toe:
 
 			if res is not None:				
 				self.new_tree.childNodes[1].appendChild(res)
+		xml_str = self.new_tree.toxml()[self.new_tree.toxml().find('?>') + 2:]
+		for key in self.later_replacement.keys():
+			xml_str = xml_str.replace(key, self.later_replacement[key])
 
-		return self.new_tree.toxml()[self.new_tree.toxml().find('?>') + 2:]
+		scripts_in_xml = xml_str.count("<script")
+		loc = 0
+		while xml_str[loc + 1:].count("<script") > 0:
+			loc = xml_str[loc + 1:].find("<script")
+			end_script = xml_str[loc + 1:].find("/>")
+			if xml_str[loc: loc + end_script + 1].find("src") >= 0:
+				xml_str = xml_str[:loc + end_script + 1] + "></script>" + xml_str[loc + end_script + 3:]
+			loc = loc + end_script + 1
+
+		return  xml_str
+
+
 	
 	def process_subtree(self, new_tree_parent, tree):
 		"""
@@ -101,9 +118,6 @@ class Toe:
 				elif key == 'toe:content':
 					content_set = True
 					self.process_toe_content_attribute(tree, new_tree_node)		
-				elif key == 'toe:structured-content':
-					content_set = True
-					self.process_toe_structured_content_attribute(tree, new_tree_node)
 				else:
 					new_tree_node.setAttribute(key, tree.getAttribute(key))
 		if not content_set:
@@ -160,7 +174,8 @@ class Toe:
 				new_node = self.process_subtree(top_node, child_node)
 				if len(top_node.childNodes) >= 1 and top_node.childNodes[-1].nodeType == Node.TEXT_NODE:
 					top_node.childNodes[-1].replaceWholeText(top_node.childNodes[-1].wholeText + " ")
-				top_node.appendChild(new_node)
+				if new_node is not None:
+					top_node.appendChild(new_node)
 			return top_node
 		return None
 
@@ -252,8 +267,10 @@ class Toe:
 					new_node.appendChild(self.new_tree.createTextNode(value[1: len(value) - 1]))
 				else:
 					resolved_value = self.current_scope.find_variable(value)
+					resolved_id  = str(uuid.uuid4())
 					if  resolved_value is not None:
-						new_node.appendChild(self.new_tree.createTextNode(str(resolved_value)))
+						self.later_replacement[resolved_id] = resolved_value
+						new_node.appendChild(self.new_tree.createTextNode(resolved_id))
 					else:
 						new_node.appendChild(self.new_tree.createTextNode(str(tree.childNodes[0].wholeText) if tree.childNodes[0].nodeType == Node.TEXT_NODE else ""))
 			else:
@@ -267,8 +284,9 @@ class Toe:
 					else:
 						resolved_value = self.current_scope.find_variable(item)
 						result += resolved_value if item is not None else ""
-
-				new_node.appendChild(self.new_tree.createTextNode(str(result)))
+				result_id  = str(uuid.uuid4())
+				self.later_replacement[result_id] = result
+				new_node.appendChild(self.new_tree.createTextNode(result_id))
 
 	def process_assign_tag(self, element):
 		var_name = element.getAttribute('var')
