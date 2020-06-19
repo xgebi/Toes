@@ -210,7 +210,7 @@ class Toe:
 						result += item[1: len(item) - 1]
 					else:
 						resolved_value = self.current_scope.find_variable(item)
-						result += resolved_value if item is not None else ""
+						result += resolved_value if resolved_value is not None else ""
 
 				new_node.setAttribute("value", result)
 
@@ -245,7 +245,7 @@ class Toe:
 						result += item[1: len(item) - 1]
 					else:
 						resolved_value = self.current_scope.find_variable(item)
-						result += resolved_value if item is not None else ""
+						result += resolved_value if resolved_value is not None else ""
 
 				new_node.setAttribute(new_key, result)
 	
@@ -283,7 +283,7 @@ class Toe:
 						result += item[1: len(item) - 1]
 					else:
 						resolved_value = self.current_scope.find_variable(item)
-						result += resolved_value if item is not None else ""
+						result += resolved_value if resolved_value is not None else ""
 				result_id  = str(uuid.uuid4())
 				self.later_replacement[result_id] = result
 				new_node.appendChild(self.new_tree.createTextNode(result_id))
@@ -521,9 +521,9 @@ class Variable_Scope:
 		self.variables = variable_dict if variable_dict is not None else {}
 		self.parent_scope = parent_scope
 
-	def find_variable(self, variable_name):
-		names = []
-		if variable_name.find("['") > -1:
+	def find_variable(self, variable_name, passed_names=None):
+		names = [] if passed_names is None else passed_names
+		if passed_names is None and variable_name.find("['") > -1:
 			names = variable_name.split("['")
 			variable_name = names[0]
 
@@ -539,8 +539,9 @@ class Variable_Scope:
 				return self.variables[variable_name]
 		
 		if self.parent_scope is not None:
-			return self.parent_scope.find_variable(variable_name)
+			return self.parent_scope.find_variable(variable_name, names)
 		return None
+
 
 	def assign_variable(self, name, value):
 		if self.is_variable_in_current_scope(name):
